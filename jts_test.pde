@@ -8,6 +8,7 @@ import org.locationtech.jts.algorithm.*;
 import org.locationtech.jts.geom.prep.*;
 import org.locationtech.jts.triangulate.*;
 import java.util.*;
+import extruder.*;
 
 
 Geometry g1;
@@ -15,6 +16,8 @@ Polygon outline;
 
 Coordinate firstPoint = new Coordinate(0, 0);
 Coordinate lastPoint = new Coordinate(0, 0);
+
+int f = 0; //frames counter
 
 void setup() {
   size(800, 800, P3D);
@@ -259,31 +262,47 @@ void draw() {
   fill(255, 0, 0, 127);
   shape(geometryToPShape(splitGeometry1));
   noFill();
-  shape(geometryToPShape(splitPolygons[1]));
+  //shape(geometryToPShape(splitPolygons[1]));
   fill(0, 255, 0, 127);
-  shape(geometryToPShape(splitGeometry2));
+  //shape(geometryToPShape(splitGeometry2));
 
+  //GeometryFactory geomFact = new GeometryFactory();
+  //DelaunayTriangulationBuilder builder = new DelaunayTriangulationBuilder();
+  //builder.setSites(splitGeometry1);
 
-
-  GeometryFactory geomFact = new GeometryFactory();
-  DelaunayTriangulationBuilder builder = new DelaunayTriangulationBuilder();
-  builder.setSites(splitGeometry1);
-
-  Geometry result = null;
-  //if (true) {
-  //result = builder.getTriangles(geomFact);      
-  //}
-  //else {
-    result = builder.getEdges(geomFact);
-  //}
+  //Geometry result = null;
+  ////if (true) {
+  ////result = builder.getTriangles(geomFact);
+  ////}
+  ////else {
+  //  result = builder.getEdges(geomFact);
+  ////}
+  PShape[] extruded;
 
   fill(100, 255, 100, 127);
-  shape(geometryToPShape(result));
+
+  extruder e;
+  e = new extruder(this);
+  extruded = e.extrude(geometryToPShape(splitPolygons[0]), 140, "box");
+
+  //shape(geometryToPShape(splitPolygons[0]));
+
+  //shape(geometryToPShape(result));
 
   //System.out.println(result);
+  //background(0);
 
+  // Set origin of scene to center of image
+  // Rotate 3 degrees per frame on the y-axis
+  rotateY(radians(f*3));
 
-
+  PShape _shape= createShape(GROUP);
+  for (PShape p: extruded){
+    _shape.addChild(p);
+  }
+  shape(_shape);
+  // Increment frame counter
+  f++;
 
   popMatrix();
 }
